@@ -4,6 +4,10 @@ pushd ~/dev/repos/continuity/
 git status
 popd
 
+pushd ~/dev/repos/continuity/amq7-broker-continuity-image
+git status
+popd
+
 pushd ~/dev/repos/continuity/amq-broker-continuity
 git status
 popd

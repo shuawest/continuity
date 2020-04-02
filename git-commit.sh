@@ -8,6 +8,12 @@ git commit -m "$1"
 git push
 popd
 
+pushd ~/dev/repos/continuity/amq7-broker-continuity-image
+git add -A
+git commit -m "$1"
+git push
+popd
+
 pushd ~/dev/repos/continuity/amq-broker-continuity
 git add -A
 git commit -m "$1"
