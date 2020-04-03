@@ -1,0 +1,10 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: continuity-operator-catalog
+  namespace: openshift-marketplace
+spec:
+  sourceType: grpc
+  image: quay.io/jowest/activemq-artemis-operator:7.6-continuity
+  displayName: Continuity Operator Catalog
+  publisher: grpc

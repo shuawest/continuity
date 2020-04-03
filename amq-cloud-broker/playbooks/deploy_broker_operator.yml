@@ -1,0 +1,136 @@
+---
+
+- import_playbook: "./prerequisites.yml"
+- import_playbook: "./prepare_openshift.yml"
+- import_playbook: "./setup_project.yml"
+
+- hosts: sites
+  gather_facts: yes
+  tasks:
+
+    - name: Create Red Hat Pull Secret
+      include_role:
+        name: openshift
+        tasks_from: create-pull-secret.yml
+
+    # Operator source should already exist
+    # - name: Clean continuity catalog in OpenShift
+    #   shell: oc delete --ignore-not-found=true -f ../roles/amq7-broker/templates/olm/activemq-artemis-operatorsource.yaml 
+    #   args:
+    #     chdir: "{{operator_src_path}}"
+
+    # - name: Add continuity catalog update to OpenShift
+    #   shell: oc apply -f TODO change to template dir TODO deploy/catalog_resources/activemq-artemis-operatorsource.yaml 
+    #   args:
+    #     chdir: "{{operator_src_path}}"
+
+    # - name: Deploy AMQ Resources
+    #   include_role:
+    #     name: amq7-broker
+    #     tasks_from: deploy-amq-resources.yml
+
+    - name: Ensure site generated file directory exists
+      file:
+        path: /tmp/{{site_id}}
+        state: directory
+
+
+    # - name: Generate Operator Group for the project
+    #   template:
+    #     src: "../roles/amq7-broker/templates/olm/operator-group.yaml.j2"
+    #     dest: /tmp/{{site_id}}/operator-group.yaml
+
+    # - name: Add continuity subscription to OpenShift
+    #   shell: oc apply -f /tmp/{{site_id}}/operator-group.yaml
+
+
+    # - name: Generate AMQ Subscription
+    #   template:
+    #     src: "../roles/amq7-broker/templates/olm/amq-subscription.yaml.j2"
+    #     dest: /tmp/{{site_id}}/amq-subscription.yaml
+
+    # - name: Add continuity subscription to OpenShift
+    #   shell: oc apply -f /tmp/{{site_id}}/amq-subscription.yaml
+
+    - name: Create AMQ Service Account
+      shell: |
+        {{oc_cmd}} apply -f ../roles/amq7-broker/templates/service_account.yaml
+
+    - name: Create AMQ Role
+      shell: |
+        {{oc_cmd}} apply -f ../roles/amq7-broker/templates/role.yaml
+
+    - name: Create AMQ Role Binding
+      shell: |
+        {{oc_cmd}} apply -f ../roles/amq7-broker/templates/role_binding.yaml
+
+    - name: Deploy AMQ Broker Operator
+      shell: |
+        {{oc_cmd}} apply -f ../roles/amq7-broker/templates/operator.yaml
+
+
+    - name: Generate AMQP Acceptor Secret
+      include_role:
+        name: amq7-broker
+        tasks_from: generate-secret.yml
+      vars:
+        secret_name: amqp-amq-broker-secret
+
+    - name: Generate Continuity Acceptor Secret
+      include_role:
+        name: amq7-broker
+        tasks_from: generate-secret.yml
+      vars:
+        secret_name: continuity-acceptor-secret
+
+
+    - name: Generate AMQP Connector Secret
+      include_role:
+        name: amq7-broker
+        tasks_from: generate-secret.yml
+      vars:
+        secret_name: connector-amq-broker-secret
+
+
+    - name: Generate AMQ Broker CR
+      template:
+        src: "../roles/amq7-broker/templates/crs/broker_v2alpha1_activemqartemis_cr.yaml.j2"
+        dest: /tmp/{{site_id}}/broker_v2alpha1_activemqartemis_cr.yaml
+
+    - name: Remove existing AMQ Broker CR
+      shell: |
+        {{oc_cmd}} delete --ignore-not-found=true -f /tmp/{{site_id}}/broker_v2alpha1_activemqartemis_cr.yaml 
+
+    - name: Deploy AMQ Broker via CR
+      shell: |
+        {{oc_cmd}} apply -f /tmp/{{site_id}}/broker_v2alpha1_activemqartemis_cr.yaml
+
+
+    - name: Add Address - anycast-test1
+      include_role:
+        name: amq7-broker
+        tasks_from: add-address.yml
+      vars:
+        addressName: anycast-test1
+        queueName: anycast-test1
+        routingType: anycast
+
+    - name: Add Address - multicast-test2
+      include_role:
+        name: amq7-broker
+        tasks_from: add-address.yml
+      vars:
+        addressName: multicast-test2
+        queueName: multicast-test2
+        routingType: multicast
+
+
+    - name: Generate Scaldown CR
+      template:
+        src: "../roles/amq7-broker/templates/crs/broker_v2alpha1_activemqartemisscaledown_cr.yaml.j2"
+        dest: /tmp/{{site_id}}/broker_v2alpha1_activemqartemisscaledown_cr.yaml
+
+    - name: Apply Scaldown CR
+      shell: |
+        {{oc_cmd}} apply -f /tmp/{{site_id}}/broker_v2alpha1_activemqartemisscaledown_cr.yaml
+

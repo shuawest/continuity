@@ -1,0 +1,36 @@
+---
+
+- name: Check if unzip is available
+  shell: unzip -v
+  register: unzip_version
+  changed_when: false
+
+# Installs unzip package as part of enmasse install playbook
+- name: Install unzip if not present
+  yum:
+    name: unzip
+    state: installed
+  become: yes
+  when: ansible_os_family != "Darwin" and unzip_version.rc != 0
+
+# - name: Install gnu-tar required for MacOSX
+#   shell: brew install gnu-tar
+#   when: ansible_facts['os_family']|lower == 'darwin'
+
+# - name: Install jq for linux64
+#   get_url:
+#     url: "https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64"
+#     dest: /usr/bin/jq
+#     checksum: md5:1fffde9f3c7944f063265e9a5e67ae4f
+#     mode: 0555
+#   sudo: yes
+#   when: ansible_facts['os_family']|lower == 'redhat'
+
+# - name: Install jq for OSX
+#   get_url:
+#     url: "http://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64"
+#     dest: /usr/local/bin/jq
+#     checksum: md5:c15f86ad9298ee71cf7d96a29f86e88a
+#     mode: 0555
+#   sudo: yes
+#   when: ansible_facts['os_family']|lower == 'darwin'

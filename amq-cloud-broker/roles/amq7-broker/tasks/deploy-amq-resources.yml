@@ -1,0 +1,35 @@
+--- 
+
+- name: Create AMQ Service Account
+  shell: |
+    {{oc_cmd}} apply -f ../roles/amq7-broker/templates/service_account.yaml
+
+- name: Create AMQ Role
+  shell: |
+    {{oc_cmd}} apply -f ../roles/amq7-broker/templates/role.yaml
+
+- name: Create AMQ Role Binding
+  shell: |
+    {{oc_cmd}} apply -f ../roles/amq7-broker/templates/role_binding.yaml
+
+- name: Deploy AMQ Broker Operator
+  shell: |
+    {{oc_cmd}} apply -f ../roles/amq7-broker/templates/operator.yaml
+
+- name: Create AMQ CRD
+  shell: |
+    {{oc_cmd}} apply -f ../roles/amq7-broker/templates/crds/broker_v2alpha1_activemqartemis_crd.yaml
+
+- name: Create AMQ Addressing CRD
+  shell: |
+    {{oc_cmd}} apply -f ../roles/amq7-broker/templates/crds/broker_v2alpha1_activemqartemisaddress_crd.yaml
+
+- name: Create AMQ Scaledown CRD
+  shell: |
+    {{oc_cmd}} apply -f ../roles/amq7-broker/templates/crds/broker_v2alpha1_activemqartemisscaledown_crd.yaml
+
+- name: Import AMQ Image
+  shell: |
+    {{oc_cmd}} import-image {{ amq_base_image }}:{{ amq_base_image_version }} --from=registry.redhat.io/{{ amq_base_image }}:{{ amq_base_image_version }} --confirm
+
+

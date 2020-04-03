@@ -1,0 +1,5 @@
+---
+
+# Supported oc versions
+supported_oc_versions:
+  - "3.11"
