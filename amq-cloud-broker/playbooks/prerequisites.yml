@@ -1,8 +1,0 @@
----
-
-- hosts: sites
-  gather_facts: yes
-  tasks:
-    - include_role:
-        name: prerequisites
-        

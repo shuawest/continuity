@@ -1,6 +1,0 @@
----
-
-- name: Building continuity plugin
-  shell: ./build.sh
-  args:
-    chdir: "{{continuity_src}}"

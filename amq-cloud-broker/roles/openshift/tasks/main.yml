@@ -1,5 +1,0 @@
----
-
-- name: "Logging into Openshift Cluster: {{ openshift_master_url }}"
-  include_tasks: login.yml
-  when: openshift_login
