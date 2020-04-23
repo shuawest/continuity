@@ -3,6 +3,7 @@
 pushd ~/dev/repos/continuity/
 git clone git@github.com:shuawest/amq7-broker-continuity-image.git
 git clone git@github.com:shuawest/amq-cloud-continuity.git
+git clone git@github.com:shuawest/amq-cloud-broker.git
 git clone git@github.com:shuawest/amq-server-continuity.git
 git clone git@github.com:shuawest/artemis-continuity-plugin.git
 popd

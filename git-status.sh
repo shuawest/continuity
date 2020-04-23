@@ -12,6 +12,10 @@ pushd ~/dev/repos/continuity/amq-cloud-continuity
 git status
 popd
 
+pushd ~/dev/repos/continuity/amq-cloud-broker
+git status
+popd
+
 pushd ~/dev/repos/continuity/amq-server-continuity
 git status
 popd

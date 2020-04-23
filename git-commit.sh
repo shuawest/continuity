@@ -20,6 +20,12 @@ git commit -m "$1"
 git push
 popd
 
+pushd ~/dev/repos/continuity/amq-cloud-broker
+git add -A
+git commit -m "$1"
+git push
+popd
+
 pushd ~/dev/repos/continuity/amq-server-continuity
 git add -A
 git commit -m "$1"
