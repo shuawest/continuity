@@ -3,6 +3,7 @@ rh-messaging-activemq-artemis-operator
 jboss-amq-7-broker-openshift-image
 
 *code-workspace
+amq-cloud-broker
 amq-broker-continuity
 amq-cloud-continuity
 amq-server-continuity
